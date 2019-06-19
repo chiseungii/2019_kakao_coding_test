@@ -1,0 +1,78 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+using namespace std;
+
+#define ENTER 456
+#define LEAVE 457
+#define CHANGE 458
+
+class User {
+public:
+	int action;
+	string id;
+
+	User(int a, string i) {
+		action = a;
+		id = i;
+	}
+};
+
+map<string, string> users;
+
+vector<string> solution(vector<string> record) {
+	vector<User> U;
+	for (int i = 0; i < record.size(); i++) {
+		string command = record[i];
+		string action, id, nickname;
+		int index;
+		for (index = 0; command[index] != ' '; index++);
+		action = command.substr(0, index);
+
+		if (action == "Leave") {
+			id = command.substr(++index, command.size() - index);
+			U.push_back(User(LEAVE, id));
+			continue;
+		}
+
+		int before = index + 1;
+		for (++index; command[index] != ' '; index++);
+		id = command.substr(before, index - before);
+		nickname = command.substr(++index, command.size() - index);
+
+		if (action == "Enter") {
+			U.push_back(User(ENTER, id));
+			users[id] = nickname;
+		}
+		else {
+			users[id] = nickname;
+		}
+	}
+
+	vector<string> result;
+	for (int i = 0; i < U.size(); i++) {
+		User tmp = U[i];
+		string command = users[tmp.id];
+
+		if (tmp.action == ENTER)
+			command += "님이 들어왔습니다.";
+		else
+			command += "님이 나갔습니다.";
+		result.push_back(command);
+	}
+	return result;
+}
+
+int main() {
+	vector<string> record;
+	record.push_back("Enter uid1234 Muzi");
+	record.push_back("Enter uid4567 Prodo");
+	record.push_back("Leave uid1234");
+	record.push_back("Enter uid1234 Prodo");
+	record.push_back("Change uid4567 Ryan");
+	vector<string> result = solution(record);
+
+	for (int i = 0; i < result.size(); i++)
+		cout << result[i] << '\n';
+}
